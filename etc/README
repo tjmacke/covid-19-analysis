@@ -1,0 +1,122 @@
+This is my tiny set of COVID-19 analysis scripts.
+
+They are intended for visualizing the history of Covid-19.  No models are
+created; no projections made.
+
+S till it is useful to look at the raw data and their daily diffs as this can
+suggest where a region of interest is on the disease progression curve.
+
+The data is on github at
+
+	https://github.com/CSSEGISandData/COVID-19 
+
+New data for each day is published shortly at 23:59:59Z.  I generally
+refresh at about 00:10Z.
+
+To play with the data you will need to clone the repo into a suitable
+directory.
+
+	git clone 'https://github.com/CSSEGISandData/COVID-19'
+u
+will put the repo into a directory COVID-19 in your current working
+directory.  You can move the repo or delete it and re-clone if you
+think it should be in another place
+
+The tarball will create directory covid-19-analysis in the directory
+where you extract it:
+
+	cd 'the right place"
+	tar xvzf cv19.tgz
+
+If it worked:
+
+	cd covid-19-analysis
+	ls -F
+
+	cv.all.tsv scripts/    us.all.tsv
+
+	ls -l scripts
+	total 56
+	-rwxr-xr-x  1 tom  staff  1303 Apr  1 19:04 collect_regions.sh
+	-rw-r--r--  1 tom  staff   929 Mar 25 20:25 fmt.py
+	-rwxr-xr-x  1 tom  staff  1251 Mar 27 09:41 fmt_cv_data.sh
+	-rwxr-xr-x  1 tom  staff  1071 Apr  5 11:02 get_latest_cv_data.sh
+	-rw-r--r--  1 tom  staff  1371 Apr  1 19:08 plotCVData.R
+	-rw-r--r--  1 tom  staff  1240 Apr  5 09:43 plotCVData2.R
+	-rw-r--r--  1 tom  staff  1254 Mar 22 20:15 plotCVDataMain.R
+
+The 2 tsv files contain the entire dataset and the dataset for the US.
+These files do NOT contiain a header which gets in the way of simple
+selecting.  And it's easy to add in R
+
+The format is
+
+	date	region	country	lat	long	confirmed	deaths	recovered
+
+Notes:
+	1. Date is YYYY-MM-DD
+	2. Some but not all countries provide data at some regional level, eg
+	   Isle of Man<tab>United Kingdom
+	3. If no region was present in the original data, I've used a dot "."
+	   as a place holder rather than "", so England, Scotland and Wales 
+	   would be .<tab>United Kingdom
+
+Once you've set up the repo, you will need to edit the file
+
+	scripts/get_latest_cv_data.sh
+
+and change the symbol CV_DATA to point to your COVID-19 repo. Once this is
+done return to the parent of the script directory and get the data
+
+	cd ../
+	rm *.tsv
+	./scripts/get_latest_cv_data.sh > cv.all.tsv
+
+You can select the US data with this command
+
+	grep US cv.all.tsv > us.all.csv
+
+To view it, start R
+
+R
+
+dataset <- 'us'
+fname <- 'us.all.tsv'
+source('./scripts/plotCVData.R')
+
+This will show 5 graphs:
+
+	confirmed (black)
+	deaths (red)
+	recovered (green)
+	conf_diff (orange)	-- day to day increase
+	deaths/confirmed (blue)	
+
+It turns out that confirmed is a lousy number as testing keeps increaing, so
+
+source('./scripts/plotCVData2.R')
+
+will show 3 graphs:
+
+	deaths (red)
+	death_diff (orange)
+	deaths/confirmed (blue)
+
+which is much better, although this doens't show if a death was _DUE TO_ Covid-19
+or that Covid-19 _WAS PRESENT_ at the time of death.  This matters a lot, but I
+don't have access that data.
+
+In the event you get this working, you'll see that the US deaths daily diffs plot
+may be approaching linear which means that we're now parabolic as opposed to 
+exponential.
+
+Aside: disease phases:
+
+	exp growth -> increasing -> peak -> decreasing -> exp decay
+
+Looks like a normal curve.
+
+Aside: exponential growth:
+
+	It always ends b/c resources can't grow faster than n^3, which is 
+	<< e^n
