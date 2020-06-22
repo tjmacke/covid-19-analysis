@@ -2,23 +2,24 @@
 #
 cv <- read.csv(fname, sep='\t')
 colnames(cv) <- c('date', 'region', 'country', 'lat', 'long', 'confirmed', 'deaths', 'recovered')
-cv$conf_diff <- c(NA, diff(cv$confirmed))
+cv$daily_confirmed <- c(cv$confirmed[1], diff(cv$confirmed))
 cv$d2c <- cv$deaths/cv$confirmed
-cv$r2c <- cv$recovered/cv$confirmed
 
 # put some space on the right side for 2nd axis
 par(mar=c(5, 5, 5, 5))
 
 # plot the various counts
 plot(as.Date(cv$date, '%Y-%m-%d'), cv$confirmed, type='l', xlab='Date', ylab='Count')
+lines(as.Date(cv$date, '%Y-%m-%d'), cv$daily_confirmed, lty=1, col='grey67')
 lines(as.Date(cv$date, '%Y-%m-%d'), cv$deaths, col='red')
-lines(as.Date(cv$date, '%Y-%m-%d'), cv$recovered, col='green')
-lines(as.Date(cv$date, '%Y-%m-%d'), cv$conf_diff, lty=1, col='orange')
+dc <- cv[as.Date(cv$date, '%Y-%m-%d') >= as.Date(cv[nrow(cv)-14, 'date'], '%Y-%m-%d'),]
+dc_lm <- lm(dc$daily_confirmed ~ as.Date(dc$date, '%Y-%m-%d'))
+abline(dc_lm, col='grey67', lty=2)
 title(main=paste(dataset, ' Covid-19 Counts Through ', cv$date[nrow(cv)], 'T23:59:59Z', sep=''))
 title(sub='Source: https://github.com/CSSEGISandData/COVID-19', cex=0.4)
 legend('topleft', inset=c(0.02, 0.02), bg='white',
-	legend=c('confirmed', 'deaths', 'recovered', 'conf_diff', 'deaths/confirmed'),
-		col=c('black', 'red', 'green', 'orange', 'blue'), lty=c(1,1,1,1,1), cex=0.7)
+	legend=c('confirmed', 'daily confirmed', 'lm(dc ~ date, last 15 days)', 'deaths/confirmed', 'deaths'),
+		col=c('black', 'grey67', 'grey67', 'blue', 'red'), lty=c(1,1,2,1,1), cex=0.7)
 
 # plot the deaths/confirmed
 par(new=T)
