@@ -25,7 +25,7 @@ abline(dc_lm, col='grey67', lty=2)
 
 # titles & legends
 title(main=paste(dataset, ' Covid-19 Counts Through ', cv$date[nrow(cv)], 'T23:59:59Z', sep=''))
-title(sub=paste('Source:', ifelse(cv$source == 'world', src_world, src_states), sep=' '), cex=0.4)
+title(sub=paste('Source:', ifelse(cv$source[1] == 'world', src_world, src_states), sep=' '), cex=0.4)
 legend('topleft', inset=c(0.02, 0.02), bg='white',
 	legend=c('confirmed', 'daily confirmed', 'lm(dc ~ date, last 15 days)', 'deaths/confirmed', 'deaths'),
 		col=c('black', 'grey67', 'grey67', 'blue', 'red'), lty=c(1,1,2,1,1), cex=0.7)
