@@ -40,6 +40,7 @@ NR > 1 {
 	printf("\t%s\t%s", ".", $(ftab["state"]))
 	printf("\t%s\t%s", ".", ".")
 	printf("\t%d\t%d\t%d", $(ftab["positive"]), $(ftab["death"]), $(ftab["recovered"]))
+	printf("\tstates")
 	printf("\n")
 }' $FILE	|
 sort -t $'\t' -k 3,3 -k 1,1

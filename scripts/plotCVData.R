@@ -1,7 +1,12 @@
 # ds, fname must be set before calling
 #
+
+# sources:
+src_world <- 'https://github.com/CSSEGISandData/COVID-19'
+src_states <- 'https://covidtracking.com/api/v1/states/daily.csv'
+
 cv <- read.csv(fname, sep='\t')
-colnames(cv) <- c('date', 'region', 'country', 'lat', 'long', 'confirmed', 'deaths', 'recovered')
+colnames(cv) <- c('date', 'region', 'country', 'lat', 'long', 'confirmed', 'deaths', 'recovered', 'source')
 cv$daily_confirmed <- c(cv$confirmed[1], diff(cv$confirmed))
 cv$d2c <- cv$deaths/cv$confirmed
 
@@ -12,18 +17,21 @@ par(mar=c(5, 5, 5, 5))
 plot(as.Date(cv$date, '%Y-%m-%d'), cv$confirmed, type='l', xlab='Date', ylab='Count')
 lines(as.Date(cv$date, '%Y-%m-%d'), cv$daily_confirmed, lty=1, col='grey67')
 lines(as.Date(cv$date, '%Y-%m-%d'), cv$deaths, col='red')
+
+# linear model of daily confirmed vs date, last 15 days. I like this better than a moving average
 dc <- cv[as.Date(cv$date, '%Y-%m-%d') >= as.Date(cv[nrow(cv)-14, 'date'], '%Y-%m-%d'),]
 dc_lm <- lm(dc$daily_confirmed ~ as.Date(dc$date, '%Y-%m-%d'))
 abline(dc_lm, col='grey67', lty=2)
+
+# titles & legends
 title(main=paste(dataset, ' Covid-19 Counts Through ', cv$date[nrow(cv)], 'T23:59:59Z', sep=''))
-title(sub='Source: https://github.com/CSSEGISandData/COVID-19', cex=0.4)
+title(sub=paste('Source:', ifelse(cv$source == 'world', src_world, src_states), sep=' '), cex=0.4)
 legend('topleft', inset=c(0.02, 0.02), bg='white',
 	legend=c('confirmed', 'daily confirmed', 'lm(dc ~ date, last 15 days)', 'deaths/confirmed', 'deaths'),
 		col=c('black', 'grey67', 'grey67', 'blue', 'red'), lty=c(1,1,2,1,1), cex=0.7)
 
-# plot the deaths/confirmed
+# plot the deaths/confirmed using scale on right side
 par(new=T)
 plot(as.Date(cv$date, '%Y-%m-%d'), cv$d2c, type='l', lty=1, col='blue', axes=F, xlab=NA, ylab=NA)
-#lines(as.Date(cv$date, '%Y-%m-%d'), cv$r2c, lty=2, col='green')
 axis(side=4)
 mtext(side=4, line=2.5, 'Deaths/Confirmed')

@@ -44,6 +44,7 @@ popd > /dev/null
 for dt in confirmed deaths recovered ; do
 	# Use $WM_HOME/bin/csv2tsv to convert the d/l csv file to tsv
 	$CVA_SCRIPTS/fmt_cv_world_data.sh $dt > /tmp/cv.$dt.$$
+
 	# Use python (2) to convert the the d/l csv file to tsv
 	# $CVA_SCRIPTS/fmt_cv_world_data.py $dt > /tmp/cv.$dt.$$
 done
@@ -73,6 +74,7 @@ END {
 			v = values[key, dt]
 			printf("\t%s", v != "" ? v : "-1")
 		}
+		printf("\tworld")
 		printf("\n")
 	}
 }' /tmp/cv.*.$$	|
