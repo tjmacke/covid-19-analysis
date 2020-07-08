@@ -2,27 +2,33 @@
 #
 . ~/etc/funcs.sh
 
-U_MSG="usage: $0 [ -help ] (no args)"
+# sort right
+LC_ALL=C
+
+U_MSG="usage: $0 [ -help ] [ -nopull] (no args)"
 
 if [ -z "$CVA_HOME" ] ; then
 	LOG ERROR "CVA_HOME not defined"
 	exit 1
 fi
+CVA_SCRIPTS=$CVA_HOME/scripts
 
+# This is where I put the git data repo; adjust as needed
 if [ -z "$CVD_HOME" ] ; then
 	LOG ERROR "CVD_HOME not defined"
 	exit 1
 fi
 
-CVA_SCRIPTS=$CVA_HOME/scripts
-
-# This is where I put the git repo; adjust as needed
-
+PULL="yes"
 while [ $# -gt 0 ] ; do
 	case $1 in
 	-help)
 		echo "$U_MSG"
 		exit 0
+		;;
+	-nopull)
+		PULL=
+		shift
 		;;
 	-*)
 		LOG ERROR "unknown option $1"
@@ -37,9 +43,11 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-pushd $CVD_HOME > /dev/null
-git pull -q
-popd > /dev/null
+if [ "$PULL" == "yes" ] ; then
+	pushd $CVD_HOME > /dev/null
+	git pull -q
+	popd > /dev/null
+fi
 
 for dt in confirmed deaths recovered ; do
 	# Use $WM_HOME/bin/csv2tsv to convert the d/l csv file to tsv
@@ -49,6 +57,7 @@ for dt in confirmed deaths recovered ; do
 	# $CVA_SCRIPTS/fmt_cv_world_data.py $dt > /tmp/cv.$dt.$$
 done
 
+echo -e "date\tstate\tcountry\tlat\tlong\tconfirmed\tdeaths\trecovered\tsource"
 awk -F'\t' '{
 	if(FILENAME != l_FILENAME){
 		nf = split(FILENAME, ary, ".")
@@ -80,4 +89,4 @@ END {
 }' /tmp/cv.*.$$	|
 sort -t $'\t' -k 3,3 -k 2,2
 
-rm -f /tmp/cv.*.$$
+ rm -f /tmp/cv.*.$$
