@@ -66,18 +66,29 @@ awk -F'\t' '{
 		n_dts++
 		dts[n_dts] = dt
 	}
-	key = sprintf("%s\t%s\t%s\t%s\t%s", $1, $2, $3, $4, $5)
+	key = sprintf("%s\t%s\t%s", $1, $2, $3)
 	if(!(key in keys)){
 		keys[key] = 1
 		n_ktab++
 		ktab[n_ktab] = key
 	}
 	values[key, dt] = $6
+	lats[key, dt] = $4 + 0
+	longs[key, dt] = $5 + 0
 }
 END {
 	for(i = 1; i <= n_ktab; i++){
 		key = ktab[i]
 		printf("%s", key)
+		# lat, long can be inconsistent among the categories, so average
+		lat = 0
+		long = 0
+		for(j = 1; j <= n_dts; j++){
+			dt = dts[j]
+			lat += lats[key, dt]
+			long += longs[key, dt]
+		}
+		printf("\t%.6f\t%.6f", lat/n_dts, long/n_dts)
 		for(j = 1; j <= n_dts; j++){
 			dt = dts[j]
 			v = values[key, dt]
@@ -89,4 +100,4 @@ END {
 }' /tmp/cv.*.$$	|
 sort -t $'\t' -k 3,3 -k 2,2
 
- rm -f /tmp/cv.*.$$
+rm -f /tmp/cv.*.$$
