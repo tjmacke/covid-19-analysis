@@ -28,8 +28,8 @@ lines(as.Date(dd$date, '%Y-%m-%d'), dd$daily_deaths, lty=1, lwd=3, col='orange')
 abline(dd_lm, lty=2)
 
 cv$ifr_14 <- NA
-# kludge, find a way to find 2nd maximum
-fr <- 100
+# look at 1fr_14 for last 50 days
+fr <- nrow(cv)-49
 lr <- nrow(cv)
 for(i in fr:lr) {
 	cv[i, 'ifr_14'] <- cv[i, 'daily_deaths']/cv[i-14, 'daily_confirmed']
@@ -37,10 +37,10 @@ for(i in fr:lr) {
 ifr_14_lm <- lm(cv$ifr_14 ~ as.Date(cv$date, '%Y-%m-%d'))
 
 # titles & legends
-title(main=paste(dataset, ' Covid-19 ?? Through ', cv$date[nrow(cv)], 'T23:59:59Z', sep=''))
+title(main=paste(dataset, ' Covid-19 IFR Through ', cv$date[nrow(cv)], 'T23:59:59Z', sep=''))
 title(sub=paste('Source:', ifelse(cv$source[1] == 'world', src_world, src_states), sep=' '), cex=0.4)
 legend('topleft', inset=c(0.02, 0.02), bg='white',
-	legend=c('deaths', 'daily deaths used in model', 'daily deaths not used in model', 'lm(dd ~ date, last 15 days)', 'deaths/confirmed', 'IFR 14', 'ml(IFR 14 ~ date)'),
+	legend=c('deaths', 'daily deaths used in model', 'daily deaths not used in model', 'lm(dd ~ date, last 15 days)', 'deaths/confirmed (ifr 0)', 'ifr 14', 'lm(ifr 14 ~ date)'),
 		col=c('red', 'orange', 'orange', 'black', 'blue', 'pink','black'), lwd=c(1,3,1,1,1,1,1), lty=c(1,1,1,2,1,1,2), cex=0.7)
 
 # plot the deaths/confirmed using scale on right side
