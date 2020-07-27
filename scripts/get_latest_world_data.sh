@@ -97,7 +97,8 @@ END {
 		printf("\tworld")
 		printf("\n")
 	}
-}' /tmp/cv.*.$$	|
-sort -t $'\t' -k 3,3 -k 2,2
+}' /tmp/cv.*.$$				|
+sort -t $'\t' -k 3,3 -k 2,2		|
+$CVA_SCRIPTS/add_country_summary.sh
 
 rm -f /tmp/cv.*.$$
