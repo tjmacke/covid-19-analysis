@@ -37,17 +37,14 @@ awk -F'\t' 'BEGIN {
 	countries["China"] = 1
 }
 {
-#	if(!($3 in countries)){
-#		print $0
-#		next
-#	}
 	if(country == ""){
 		if($3 in countries){
 			country = $3
 			cnt = 1
 			dcr = $1 "\t" $3 "\t" $2
 			dcr_tab[dcr] = $0
-		}
+		}else
+			printf("%s\n", $0)
 	}else if($3 == country){
 		cnt++
 		dcr = $1 "\t" $3 "\t" $2
