@@ -57,7 +57,7 @@ for dt in confirmed deaths recovered ; do
 	# $CVA_SCRIPTS/fmt_cv_world_data.py $dt > /tmp/cv.$dt.$$
 done
 
-echo -e "date\tstate\tcountry\tlat\tlong\tconfirmed\tdeaths\trecovered\tsource"
+echo -e "date\tstate\tcountry\tlat\tlong\tconfirmed\tdeaths\trecovered\tsource\tcc2"
 awk -F'\t' '{
 	if(FILENAME != l_FILENAME){
 		nf = split(FILENAME, ary, ".")
@@ -99,6 +99,7 @@ END {
 	}
 }' /tmp/cv.*.$$				|
 sort -t $'\t' -k 3,3 -k 2,2		|
-$CVA_SCRIPTS/add_country_summary.sh
+$CVA_SCRIPTS/add_country_summary.sh	|
+$CVA_SCRIPTS/add_country_codes.sh
 
 rm -f /tmp/cv.*.$$
