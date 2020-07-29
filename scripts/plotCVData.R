@@ -5,8 +5,8 @@
 src_world <- 'https://github.com/CSSEGISandData/COVID-19'
 src_states <- 'https://covidtracking.com/api/v1/states/daily.csv'
 
-cv <- read.csv(fname, sep='\t')
-colnames(cv) <- c('date', 'region', 'country', 'lat', 'long', 'confirmed', 'deaths', 'recovered', 'source')
+cv <- read.csv(fname, sep='\t', header=F)
+colnames(cv) <- c('date', 'region', 'country', 'lat', 'long', 'confirmed', 'deaths', 'recovered', 'source', 'cc2')
 cv$d2c <- cv$deaths/cv$confirmed
 
 # put some space on the right side for 2nd axis

@@ -5,8 +5,8 @@
 src_world <- 'https://github.com/CSSEGISandData/COVID-19'
 src_states <- 'https://covidtracking.com/api/v1/states/daily.csv'
 
-cv <- read.csv(fname, sep='\t')
-colnames(cv) <- c('date', 'region', 'country', 'lat', 'long', 'confirmed', 'deaths', 'recovered', 'source')
+cv <- read.csv(fname, sep='\t', header=F)
+colnames(cv) <- c('date', 'region', 'country', 'lat', 'long', 'confirmed', 'deaths', 'recovered', 'source', 'cc2')
 cv$daily_confirmed <- c(cv$confirmed[1], diff(cv$confirmed))
 cv$daily_deaths <- c(cv$deaths[1], diff(cv$deaths))
 cv$d2c <- cv$deaths/cv$confirmed

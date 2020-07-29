@@ -31,16 +31,18 @@ if [ $# -ne 0 ] ; then
 	exit 1
 fi
 
+echo -e "date\tstate\tcountry\tlat\tlong\tcontirmed\tdeaths\trecovered\tsource\tcc2"
+
 awk -F'\t' 'NR == 1 {
 	for(i = 1; i <= NF; i++)
 		ftab[$i] = i
 }
 NR > 1 {
 	printf("%s-%s-%s", substr($(tab["date"]), 1, 4), substr($(tab["date"]), 5, 2), substr($(tab["date"]), 7, 2))
-	printf("\t%s\t%s", ".", $(ftab["state"]))
+	printf("\t%s\t%s", $(ftab["state"]), "United States")
 	printf("\t%s\t%s", ".", ".")
 	printf("\t%d\t%d\t%d", $(ftab["positive"]), $(ftab["death"]), $(ftab["recovered"]))
-	printf("\tstates")
+	printf("\tstates\tUS")
 	printf("\n")
 }' $FILE	|
-sort -t $'\t' -k 3,3 -k 1,1
+sort -t $'\t' -k 2,2 -k 1,1
