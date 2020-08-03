@@ -42,41 +42,56 @@ if [ $# -ne 0 ] ; then
 	exit 1
 fi
 
-awk -F'\t' 'NR > 1 {
+awk -F'\t' 'BEGIN {
+	date = "'"$DATE"'"
+}
+NR > 1 {
 	if($2 != l_2){
 		if(l_2 != ""){
-			dd = deaths[n_deaths] - deaths[n_deaths-1]
-			t_dd += dd
-			printf("%s\t%s\t%d\n", l_1, l_2, dd)
+			print_dd(dates, deaths, (date != "" ? date : l_1), l_2)
 			delete deaths
-			n_deaths = 0
+			delete dates
+			n_dates = 0
 		}
 	}
 	l_1 = $1
 	l_2 = $2
-	n_deaths++
-	deaths[n_deaths] = $7
+	n_dates++
+	dates[$1] = n_dates
+	deaths[n_dates] = $7
 }
 END {
 	if(l_2 != ""){
-		dd = deaths[n_deaths] - deaths[n_deaths-1]
-		t_dd += dd
-		printf("%s\t%s\t%d\n", l_1, l_2, dd)
+		print_dd(dates, deaths, (date != "" ? date : l_1), l_2)
 		delete deaths
-		n_deaths = 0
-		printf("%s\t%s\t%d\n", l_1, "total", t_dd)
+		delete_dates
+		n_dates = 0
 	}
+}
+function print_dd(dates, deaths, date, state,   i, dd) {
+	i = dates[date]
+	if(i == 1)
+		dd = deaths[1]
+	else
+		dd = deaths[i] - deaths[i-1]
+	t_dd += dd
+	printf("%s\t%s\t%d\n", date, state, dd)
+	return 0
 }' $FILE		|
 sort -t $'\t' -k 3rn,3	|
-awk -F'\t' 'NR == 1{
-	printf("rank\tdate\tstate\tdeaths\tcumDeaths\tpct\n")
-	total = $3+0
-	printf(".\t%s\tALL\t%d\t.\t100.0\n", $1, total)
-#	printf(".\t%s\t.\t100.0\n", $0)
+awk -F'\t' '{
+	date = $1
+	state[NR] = $2
+	dd[NR] = $3
+	cum[NR] = NR > 1 ? cum[NR-1] + $3 : $3
 }
-NR > 1 {
-	rank++
-	cum += $3
-	pct = 100.0*cum/total
-	printf("%d\t%s\t%s\t%d\t%d\t%5.1f\n", rank, $1, $2, $3, cum, pct) 
+END {
+	printf("rank\tdate\tstate\tdeaths\tcumDeaths\tpct\n")
+	pct = cum[NR] == 0 ? 0 : 100.0*cum[i]/cum[NR]
+	printf(".\t%s\tALL\t%d\t.\t%.1f\n", $1, cum[NR], pct)
+	for(i = 1; i <= NR; i++){
+		pct = cum[NR] == 0 ? 0 : 100.0*cum[i]/cum[NR]
+		printf("%d\t%s\t%s\t%d\t%d\t%.1f", i, date, state[i], dd[i], cum[i], pct)
+		printf("\n")
+	}
 }'

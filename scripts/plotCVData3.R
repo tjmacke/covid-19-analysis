@@ -15,17 +15,17 @@ cv$d2c <- cv$deaths/cv$confirmed
 par(mar=c(5, 5, 5, 5))
 
 # plot the deaths
-plot(as.Date(cv$date, '%Y-%m-%d'), cv$deaths, type='l', col='red', xlab='Date', ylab='Deaths')
+plot(as.Date(cv$date, '%Y-%m-%d'), cv$confirmed, type='l', col='black', xlab='Date', ylab='Deaths')
 
 # daily deaths (dd) and linear model of last 15 days of dd vs date.
-dd_pre <- cv[as.Date(cv$date, '%Y-%m-%d') <= as.Date(cv[nrow(cv)-14, 'date'], '%Y-%m-%d'),]
-dd <- cv[as.Date(cv$date, '%Y-%m-%d') >= as.Date(cv[nrow(cv)-14, 'date'], '%Y-%m-%d'),]
-dd_lm <- lm(dd$daily_deaths ~ as.Date(dd$date, '%Y-%m-%d'))
+# dd_pre <- cv[as.Date(cv$date, '%Y-%m-%d') <= as.Date(cv[nrow(cv)-14, 'date'], '%Y-%m-%d'),]
+# dd <- cv[as.Date(cv$date, '%Y-%m-%d') >= as.Date(cv[nrow(cv)-14, 'date'], '%Y-%m-%d'),]
+# dd_lm <- lm(dd$daily_deaths ~ as.Date(dd$date, '%Y-%m-%d'))
 # Use 2 lines: first is dd not used in model (thin), second is  dd used in model (thick)
-lines(as.Date(dd_pre$date, '%Y-%m-%d'), dd_pre$daily_deaths, lty=1, col='orange')
-lines(as.Date(dd$date, '%Y-%m-%d'), dd$daily_deaths, lty=1, lwd=3, col='orange')
+# lines(as.Date(dd_pre$date, '%Y-%m-%d'), dd_pre$daily_deaths, lty=1, col='orange')
+# lines(as.Date(dd$date, '%Y-%m-%d'), dd$daily_deaths, lty=1, lwd=3, col='orange')
 # Now this works well, as the extended line makes the slope easier to see
-abline(dd_lm, lty=2)
+# abline(dd_lm, lty=2)
 
 cv$ifr_14 <- NA
 # # look at 1fr_14 for from 2020-06-01
@@ -40,8 +40,8 @@ ifr_14_lm <- lm(cv$ifr_14 ~ as.Date(cv$date, '%Y-%m-%d'))
 title(main=paste(dataset, ' Covid-19 IFR-14 Through ', cv$date[nrow(cv)], 'T23:59:59Z', sep=''))
 title(sub=paste('Source:', ifelse(cv$source[1] == 'world', src_world, src_states), sep=' '), cex=0.4)
 legend('topleft', inset=c(0.02, 0.02), bg='white',
-	legend=c('deaths', 'daily deaths used in model', 'daily deaths not used in model', 'lm(dd ~ date, last 15 days)', 'deaths/confirmed (ifr 0)', 'ifr 14', 'lm(ifr 14 ~ date, from 2020-06-01)'),
-		col=c('red', 'orange', 'orange', 'black', 'blue', 'pink','black'), lwd=c(1,3,1,1,1,1,1), lty=c(1,1,1,2,1,1,2), cex=0.7)
+	legend=c('confirmed', 'deaths/confirmed (ifr 0)', 'ifr 14', 'lm(ifr 14 ~ date, from 2020-06-01)'),
+		col=c('black', 'blue', 'pink','black'), lwd=c(1,1,1,1), lty=c(1,1,1,2), cex=0.7)
 
 # plot the deaths/confirmed using scale on right side
 par(new=T)
