@@ -88,7 +88,7 @@ awk -F'\t' '{
 END {
 	printf("rank\tdate\tstate\tdeaths\tcumDeaths\tpct\n")
 	pct = cum[NR] == 0 ? 0 : 100.0*cum[i]/cum[NR]
-	printf(".\t%s\tALL\t%d\t.\t%.1f\n", $1, cum[NR], pct)
+	printf(".\t%s\tALL\t%d\t.\t%.1f\n", $1, cum[NR], 100.0)
 	for(i = 1; i <= NR; i++){
 		pct = cum[NR] == 0 ? 0 : 100.0*cum[i]/cum[NR]
 		printf("%d\t%s\t%s\t%d\t%d\t%.1f", i, date, state[i], dd[i], cum[i], pct)
