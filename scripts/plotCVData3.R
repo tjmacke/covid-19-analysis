@@ -15,7 +15,7 @@ cv$d2c <- cv$deaths/cv$confirmed
 par(mar=c(5, 5, 5, 5))
 
 # plot the deaths
-plot(as.Date(cv$date, '%Y-%m-%d'), cv$confirmed, type='l', col='black', xlab='Date', ylab='Deaths')
+plot(as.Date(cv$date, '%Y-%m-%d'), cv$confirmed, type='l', col='black', xlab='Date', ylab='Count')
 
 # daily deaths (dd) and linear model of last 15 days of dd vs date.
 # dd_pre <- cv[as.Date(cv$date, '%Y-%m-%d') <= as.Date(cv[nrow(cv)-14, 'date'], '%Y-%m-%d'),]

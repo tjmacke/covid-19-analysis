@@ -113,7 +113,8 @@ if [ "$MAP" == "yes" ] ; then
 			n_ary = split(lines[i], ary, "\t")
 			printf("%s\t%d\t%d", ary[1], max_d, ary[2])
 			for(j = 3; j <= n_ary; j++){
-				printf("\t%.4f", 1.0*substr(ary[j], 4)/max_d)
+#				printf("\t%.4f", 1.0*substr(ary[j], 4)/max_d)
+				printf("\t%s", substr(ary[j], 4))
 			}
 			printf("\n")
 		}
