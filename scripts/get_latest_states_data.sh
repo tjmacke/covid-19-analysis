@@ -12,7 +12,7 @@ WM_BIN=$WM_HOME/bin
 
 TMP_DATA=/tmp/data.$$
 
-URL="https://covidtracking.com/api/v1/states/daily.csv"
+URL="https://api.covidtracking.com/v1/states/daily.csv"
 
 # get the historical US states data and convert to tsv
 curl -s -S "$URL" | $WM_BIN/csv2tsv

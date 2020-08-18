@@ -2,7 +2,7 @@
 #
 . ~/etc/funcs.sh
 
-U_MSG="usage: $0 [ -help ] [ -map ] cv-states-file"
+U_MSG="usage: $0 [ -help ] [ -p pct ] [ -map ] cv-states-file"
 
 if [ -z "$CVA_HOME" ] ; then
 	LOG ERROR "CVA_HOME not defined"
@@ -10,6 +10,14 @@ if [ -z "$CVA_HOME" ] ; then
 fi
 CVA_SCRIPTS=$CVA_HOME/scripts
 
+if [ -z "$WM_HOME" ] ; then
+	LGO ERROR "WM_HOME not defined"
+	exit 1
+fi
+WM_ETC=$WM_HOME/etc
+ST_INFO=$WM_ETC/statefp.tsv
+
+PCT=50.0
 MAP=
 FILE=
 
@@ -20,6 +28,16 @@ while [ $# -gt 0 ] ; do
 	-help)
 		echo "$U_MSG"
 		exit 0
+		;;
+	-p)
+		shift
+		if [ $# -eq 0 ] ; then
+			LOG ERROR "-p requires pct argument"
+			echo "$U_MSG" 1>&2
+			exit 1
+		fi
+		PCT="$1"
+		shift
 		;;
 	-map)
 		MAP="yes"
@@ -60,6 +78,7 @@ awk -F'\t' 'NR > 1 {
 for d in $(tail -n +10 $TMP_DFILE) ; do
 	$CVA_SCRIPTS/get_dd_states.sh -d $d $FILE |
 	awk -F'\t' 'BEGIN {
+		pct = "'"$PCT"'" + 0
 		map = "'"$MAP"'" == "yes"
 	}
 	NR == 2 {
@@ -68,30 +87,37 @@ for d in $(tail -n +10 $TMP_DFILE) ; do
 	NR > 2 {
 		date = $2
 		cnt = $5
-		pct = $6
-		if(map){
-#			s_list = s_list sprintf("\t%s|%s", $3, $4)
-			st_cnt[$3] = $4
-		}else{
-			if(cnt > 0)
-				s_list = s_list sprintf("\t%s", $3)
-			if(pct >= 50.0)
+		if(pct == 100){
+			l_pct = 100
+			s_list = s_list sprintf("\t%s", $3)
+			if(map)
+				s_list = s_list sprintf("|%s", $4)
+		}else if(cnt > 0){
+			s_list = s_list sprintf("\t%s", $3)
+			if(map)
+				s_list = s_list sprintf("|%s", $4)
+			if($6 >= pct){
+				l_pct = $6
 				exit 0
+			}
 		}
 	}
 	END {
-		if(map){
-			n_st = asorti(st_cnt, st_idx)
-			printf("%s\t%s", date, t_deaths)
-			for(i = 1; i <= n_st; i++)
-				printf("\t%s|%d", st_idx[i], st_cnt[st_idx[i]])
-			printf("\n")
-		}else
-			printf("%s\t%s\t%.1f%s\n", date, t_deaths, (pct == 0 ? 100.0 : pct), s_list)
+		printf("%s\t%s\t%.1f%s\n", date, t_deaths, (l_pct == 0 ? 100.0 : l_pct), s_list)
 	}'
 done	|
 if [ "$MAP" == "yes" ] ; then
 	awk -F'\t' 'BEGIN {
+		st_info = "'"$ST_INFO"'"
+		for(n_st_lines = n_stab = 0; (getline < st_info) > 0; ){
+			n_st_lines++
+			if(n_st_lines > 1){
+				n_stab++
+				st_idx[$2] = n_stab
+				stab[n_stab] = $2
+			}
+		}
+		close(st_info)
 		max_d = -1
 	}
 	{
@@ -105,16 +131,21 @@ if [ "$MAP" == "yes" ] ; then
 	}
 	END {
 		n_ary = split(lines[1], ary, "\t")
-		printf("date\tmaxDeath\tcurTDeath")
-		for(i = 3; i <= n_ary; i++)
-			printf("\t%s", substr(ary[i], 1, 2))
+		printf("date\tmaxDeath\tcurTDeath\ttStsPct")
+		for(i = 1; i <= n_stab; i++)
+			printf("\t%s", stab[i])
 		printf("\n")
+
 		for(i = 1; i <= n_lines; i++){
 			n_ary = split(lines[i], ary, "\t")
-			printf("%s\t%d\t%d", ary[1], max_d, ary[2])
-			for(j = 3; j <= n_ary; j++){
-#				printf("\t%.4f", 1.0*substr(ary[j], 4)/max_d)
-				printf("\t%s", substr(ary[j], 4))
+			printf("%s\t%d\t%d\t%s", ary[1], max_d, ary[2], ary[3])
+			for(j = 3; j <= n_ary; j++)
+				topStates[substr(ary[j], 1, 2)] = substr(ary[j], 4)
+			for(j = 1; j <= n_stab; j++){
+				if(stab[j] in topStates)
+					printf("\t%s", topStates[stab[j]])
+				else
+					printf("\t.")
 			}
 			printf("\n")
 		}
