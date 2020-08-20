@@ -130,24 +130,28 @@ if [ "$MAP" == "yes" ] ; then
 		lines[n_lines] = $0
 	}
 	END {
-		n_ary = split(lines[1], ary, "\t")
-		printf("date\tmaxDeath\tcurTDeath\ttStsPct")
+		printf("date\tmaxDeaths\tdateDeaths\tnTpSts\ttpStsDths\ttpStsDthPct")
 		for(i = 1; i <= n_stab; i++)
 			printf("\t%s", stab[i])
 		printf("\n")
 
 		for(i = 1; i <= n_lines; i++){
 			n_ary = split(lines[i], ary, "\t")
-			printf("%s\t%d\t%d\t%s", ary[1], max_d, ary[2], ary[3])
-			for(j = 3; j <= n_ary; j++)
+			tpStsDths = 0
+			for(j = 4; j <= n_ary; j++){
 				topStates[substr(ary[j], 1, 2)] = substr(ary[j], 4)
+				tpStsDths += substr(ary[j], 4)
+			}
+			printf("%s\t%d\t%d\t%d\t%d\t%s", ary[1], max_d, ary[2], n_ary-3, tpStsDths, ary[3])
+
 			for(j = 1; j <= n_stab; j++){
 				if(stab[j] in topStates)
 					printf("\t%s", topStates[stab[j]])
 				else
-					printf("\t.")
+					printf("\t0")
 			}
 			printf("\n")
+			delete topStates
 		}
 	}'
 else
