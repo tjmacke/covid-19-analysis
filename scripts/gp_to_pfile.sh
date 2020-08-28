@@ -56,8 +56,8 @@ NR == 1 {
 		cnames[i] = $i
 }
 NR > 1 && $1 == date {
-	printf("date\tmaxDeaths\tdateDeaths\tnTpSts\ttpStsDths\ttStsPct\tSTUSPS\tstDths\n")
+	printf("date\tmaxDeaths\tdateDeaths\tnTpSts\ttpStsDths\ttpStsDthsPct\tSTUSPS\tstDateDths\n")
 	for(i = 7; i <= NF; i++)
-		printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", $1, $2, $3, $4, $5, $6, cnames[i], $i)
+		printf("%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\n", $1, $2, $3, $4, $5, $6, cnames[i], $i != 0 ? $3 : 0)
 	exit 0
 }' $FILE
