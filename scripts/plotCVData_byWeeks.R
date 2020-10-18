@@ -79,8 +79,8 @@ for(m in seq(f_mon, l_mon)) {
 		points(c(1), cv[f_row, 'daily_deaths'], col=colors[c_idx])
 	}
 	l_col <- c(l_col, colors[c_idx]) 
-	l_sums <- c(l_sums, sum(cv[f_row:l_row, 'daily_deaths']))
-	l_text <- c(l_text, paste(cv[f_row, 'date'], ', total = ', sum(cv[f_row:l_row, 'daily_deaths']), sep=''))
+	is_short <- ifelse(l_row-f_row+1 < 7, paste(', ', l_row-f_row+1, ' days', sep=''), '')
+	l_text <- c(l_text, paste(cv[f_row, 'date'], ', total = ', sum(cv[f_row:l_row, 'daily_deaths']), is_short, sep=''))
 	c_idx <- c_idx + 1
 }
 
