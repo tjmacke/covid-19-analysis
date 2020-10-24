@@ -13,7 +13,7 @@ plotCVData <- function(ds, df) {
 	lines(as.Date(df$date, '%Y-%m-%d'), df$recovered, col='green')
 
 	# titles & legends
-	title(main=paste(dataset, ' Covid-19 Counts Through ', df$date[nrow(df)], 'T23:59:59Z', sep=''))
+	title(main=paste(ds, ' Covid-19 Counts Through ', df$date[nrow(df)], 'T23:59:59Z', sep=''))
 	title(sub=paste('Source:', ifelse(df$source[1] == 'world', src_world, src_states), sep=' '), cex=0.4)
 	legend('topleft', inset=c(0.02, 0.02), bg='white',
 		legend=c('confirmed', 'deaths', 'recovered', 'deaths/confirmed'),
