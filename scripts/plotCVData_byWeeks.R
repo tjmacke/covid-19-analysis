@@ -44,7 +44,7 @@ plotCVData_byWeeks <- function(ds, df) {
 		yaxt='n'
 	)
 
-	# add the axes & title
+	# add the axes & titles
 	x_tk <- seq(1, 7)
 	x_lb <- c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
 	axis(1, at=x_tk, labels=x_lb)
