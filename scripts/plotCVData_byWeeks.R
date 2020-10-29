@@ -56,8 +56,10 @@ plotCVData_byWeeks <- function(ds, df) {
 	abline(h=ya_info, lty=3, col='black')
 	abline(v=x_tk, lty=3, col='black')
 
-	# set up the 4 colors & legend data
-	colors <- c('grey', 'darkorange4', 'orange', 'red')
+	# this palate is called Amber color palette. 5 colors, skip the first
+        # colors <- c('#ad3196', '#65bad1', '#adc842', '#ffbf00', '#dd8e87')
+        colors <- c('#65bad1', '#adc842', '#ffbf00', '#dd8e87')
+
 	c_idx <- length(colors) - last_n + 1
 	l_col <- c()
 	l_text <- c()
@@ -67,13 +69,14 @@ plotCVData_byWeeks <- function(ds, df) {
 		f_row <- m2c_idx[m]
 		l_row <- ifelse(f_row+6 <= nrow(df), f_row+6, nrow(df))
 		if (l_row > f_row) {
-			lines(seq(1, l_row-f_row+1), df[f_row:l_row, 'daily_deaths'], col=colors[c_idx])
+			lines(seq(1, l_row-f_row+1), df[f_row:l_row, 'daily_deaths'], lwd=3, col=colors[c_idx])
 		} else {
 			points(c(1), df[f_row, 'daily_deaths'], col=colors[c_idx])
 		}
-		l_col <- c(l_col, colors[c_idx]) 
+		l_col <- c(colors[c_idx], l_col) 
 		is_short <- ifelse(l_row-f_row+1 < 7, paste(', ', l_row-f_row+1, ' days', sep=''), '')
-		l_text <- c(l_text, paste(df[f_row, 'date'], ', total = ', sum(df[f_row:l_row, 'daily_deaths']), is_short, sep=''))
+		# l_text <- c(l_text, paste(df[f_row, 'date'], ', total = ', sum(df[f_row:l_row, 'daily_deaths']), is_short, sep=''))
+		l_text <- c(paste(df[f_row, 'date'], ', total = ', sum(df[f_row:l_row, 'daily_deaths']), is_short, sep=''), l_text)
 		c_idx <- c_idx + 1
 	}
 
@@ -81,5 +84,6 @@ plotCVData_byWeeks <- function(ds, df) {
 	legend('bottom', inset=c(0, 0.02), bg='white',
 		legend=l_text,
 		col=l_col,
+		lwd=3,
 		lty=1)
 }
