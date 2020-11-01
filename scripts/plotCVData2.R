@@ -4,11 +4,34 @@ plotCVData2 <- function(ds, df) {
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
 	src_states <- 'https://covidtracking.com/api/v1/states/daily.csv'
 
+	dm_home <- Sys.getenv('DM_HOME')
+	if (dm_home == '') {
+		stop('DM_HOME is not defined.', call=.F)
+	}
+	sfn <- paste(dm_home, 'lib', 'getYaxisInfo.R', sep='/')
+	source(sfn, chdir=T)
+
+	ya_info <- getYaxisInfo(max(df$deaths))
+	y_max <- max(ya_info)
+
 	# put some space on the right side for 2nd axis
-	par(mar=c(5, 5, 5, 5))
+	mvals <- par('mar')
+	mvals[4] <- mvals[2]
+	par(mar = mvals)
 
 	# plot the deaths
-	plot(as.Date(df$date, '%Y-%m-%d'), df$deaths, type='l', col='red', xlab='Date', ylab='Deaths')
+	plot(
+		c(as.Date(df$date[1], '%Y-%m-%d'), as.Date(df$date[nrow(df)], '%Y-%m-%d')),
+		c(0, y_max),
+		type='n',
+		xlab='Date',
+		ylab='Counts',
+		yaxt='n'
+	)
+	lines(as.Date(df$date, '%Y-%m-%d'), df$deaths, col='red')
+
+	# add the axes
+	axis(2, at=ya_info, labels=ya_info)
 
 	# daily deaths (dd) and linear model of last 15 days of dd vs date.
 	dd_pre <- df[as.Date(df$date, '%Y-%m-%d') <= as.Date(df[nrow(df)-14, 'date'], '%Y-%m-%d'),]
@@ -20,10 +43,12 @@ plotCVData2 <- function(ds, df) {
 	# Now this works well, as the extended line makes the slope easier to see
 	abline(dd_lm, lty=2)
 
-	# titles & legends
+	# add titles
 	title(main=paste(ds, ' Covid-19 Deaths Through ', df$date[nrow(df)], 'T23:59:59Z', sep=''))
 	title(sub=paste('Source:', ifelse(df$source[1] == 'world', src_world, src_states), sep=' '), cex=0.4)
-	legend('topleft', inset=c(0.02, 0.02), bg='white',
+
+	# add the legend
+	legend('top', inset=c(0, 0.02), bg='white',
 		legend=c('deaths', 'daily deaths used in model', 'daily deaths not used in model', 'lm(dd ~ date, last 15 days)', 'deaths/confirmed'),
 			col=c('red', 'orange', 'orange', 'black', 'blue'), lwd=c(1,3,1,1,1), lty=c(1,1,1,2,1), cex=0.7)
 
