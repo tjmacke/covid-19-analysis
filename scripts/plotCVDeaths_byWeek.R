@@ -16,8 +16,6 @@ plotCVDeaths_byWeek <- function(ds, df) {
 		stop('no Mondays in dataset', call=.F)
 	}
 
-	print(mon)
-
 	m2c_idx <- as.integer(rownames(mon))
 	m2c_len <- c(diff(m2c_idx), nrow(df) - m2c_idx[length(m2c_idx)] + 1)
 
@@ -25,8 +23,6 @@ plotCVDeaths_byWeek <- function(ds, df) {
 	l_mon <- m2c_idx[length(m2c_idx)]
 	f_row <- f_mon
 	l_row <- nrow(df)
-
-	print(c(f_mon, l_mon))
 
 	if (l_row - l_mon < 6) { # short week, skip
 		l_mon = l_mon - 7
@@ -36,12 +32,37 @@ plotCVDeaths_byWeek <- function(ds, df) {
 		l_row = l_mon + 6
 	}
 
-	print(c(f_mon, l_mon))
-	print(c(f_row, l_row))
+	dpw <- c()
+	for (i in seq(f_row, l_row, 7)) {
+		dpw <- c(dpw, sum(cv[i:(i+6), 'daily_deaths']))
+	}
+	l_mon_row <- nrow(mon)
+	if (length(dpw) < nrow(mon)) {
+		dpw <- c(dpw, NA)
+		l_mon_row = l_mon_row - 1
+	}
+	mon$dpw <- dpw
 
-	ya_info <- getYaxisInfo(max(df[f_row:l_row, 'daily_deaths']))
+	ya_info <- getYaxisInfo(max(mon$dpw, na.rm=T))
 	y_max <- max(ya_info)
 
-	print(ya_info)
-	print(y_max)
+	first_mondays <- mon[mon$mday <= 7,]
+
+	plot(
+		c(as.Date(mon[1, 'date'], '%Y-%m-%d'), as.Date(mon[l_mon_row, 'date'], '%Y-%m-%d')),
+		c(0, y_max),
+		type='n',
+		xlab='Weeks',
+		xaxt='n',
+		ylab='Weekly Deaths',
+		yaxt='n'
+	)
+	lines(as.Date(mon$date, '%Y-%m-%d'), mon$dpw)
+	axis(1, at=as.Date(first_mondays$date, '%Y-%m-%d'), labels=first_mondays$date)
+	axis(2, at=ya_info, labels=ya_info, las=1)
+	title(main=paste(ds, 'Weekly COVID-19 Deaths; Weeks start on Monday', sep=' '))
+	title(sub=paste('Source:', src_world, sep=' '))
+
+	abline(h=ya_info, lty=3, col='black')
+	abline(v=as.Date(first_mondays$date, '%Y-%m-%d'), lty=3, col='black')
 }
