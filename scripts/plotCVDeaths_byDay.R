@@ -1,4 +1,4 @@
-plotCVData_byWeeks <- function(ds, df) {
+plotCVDeaths_byDay <- function(ds, df) {
 
 	# sources:
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
@@ -71,7 +71,7 @@ plotCVData_byWeeks <- function(ds, df) {
 		if (l_row > f_row) {
 			lines(seq(1, l_row-f_row+1), df[f_row:l_row, 'daily_deaths'], lwd=3, col=colors[c_idx])
 		} else {
-			points(c(1), df[f_row, 'daily_deaths'], col=colors[c_idx])
+			points(c(1), df[f_row, 'daily_deaths'], pch=21, bg = colors[c_idx], col=colors[c_idx])
 		}
 		l_col <- c(colors[c_idx], l_col) 
 		is_short <- ifelse(l_row-f_row+1 < 7, paste(', ', l_row-f_row+1, ' days', sep=''), '')
