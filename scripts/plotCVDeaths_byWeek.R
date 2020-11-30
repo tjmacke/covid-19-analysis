@@ -52,13 +52,14 @@ plotCVDeaths_byWeek <- function(ds, df) {
 		c(as.Date(mon[1, 'date'], '%Y-%m-%d'), as.Date(mon[l_mon_row, 'date'], '%Y-%m-%d')),
 		c(0, y_max),
 		type='n',
-		xlab='Weeks',
+		xlab='First Monday of Month',
 		xaxt='n',
 		ylab='Weekly Deaths',
 		yaxt='n'
 	)
 	lines(as.Date(mon$date, '%Y-%m-%d'), mon$dpw)
-	axis(1, at=as.Date(first_mondays$date, '%Y-%m-%d'), labels=first_mondays$date)
+	axis(1, at=as.Date(first_mondays$date, '%Y-%m-%d'), labels=F)
+        text(as.Date(first_mondays$date, '%Y-%m-%d'), par("usr")[3] - 500.0, labels=first_mondays$date, srt=45, adj=1, xpd=T, cex=0.6)
 	axis(2, at=ya_info, labels=ya_info, las=1)
 	title(main=paste(ds, 'Weekly COVID-19 Deaths; Weeks start on Monday', sep=' '))
 	title(sub=paste('Source:', src_world, sep=' '))
