@@ -4,6 +4,9 @@ plotCVData <- function(ds, df) {
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
 	src_states <- 'https://covidtracking.com/api/v1/states/daily.csv'
 
+        # vaccinations begin:
+	v_start <- '2020-12-14'
+
 	dm_home <- Sys.getenv('DM_HOME')
 	if (dm_home == '') {
 		stop('DM_HOME is not defined.', call=.F)
@@ -32,6 +35,9 @@ plotCVData <- function(ds, df) {
 	lines(as.Date(df$date, '%Y-%m-%d'), df$deaths, col='red')
 	lines(as.Date(df$date, '%Y-%m-%d'), df$recovered, col='green')
 
+	# add a line that shows when vaccinations started
+	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta')
+
 	# add the axes
 	axis(2, at=ya_info, labels=ya_info) #, las=1)
 
@@ -39,10 +45,14 @@ plotCVData <- function(ds, df) {
 	title(main=paste(ds, ' Covid-19 Counts Through ', df$date[nrow(df)], 'T23:59:59Z', sep=''))
 	title(sub=paste('Source:', ifelse(df$source[1] == 'world', src_world, src_states), sep=' '), cex=0.4)
 
+
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
-		legend=c('confirmed', 'deaths', 'recovered', 'deaths/confirmed'),
-			col=c('black', 'red', 'green', 'blue'), lwd=c(1, 1, 1, 1), cex=0.7)
+		legend=c('confirmed', 'deaths', 'recovered', 'deaths/confirmed', 'vac. starts'),
+		col=c('black', 'red', 'green', 'blue', 'magenta'),
+		lwd=c(1, 1, 1, 1, 1),
+		cex=0.7
+	)
 
 	# plot the deaths/confirmed using scale on right side
 	par(new=T)

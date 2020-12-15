@@ -4,6 +4,9 @@ plotCVDeaths_byWeek <- function(ds, df) {
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
 	src_states <- 'https://api.covidtracking.com/v1/states/daily.csv'
 
+	# vaccinations begin:
+	v_start <- '2020-12-14'
+
 	dm_home <- Sys.getenv('DM_HOME')
 	if (dm_home == '') {
 		stop('DM_HOME is not defined.', call=.F)
@@ -61,9 +64,21 @@ plotCVDeaths_byWeek <- function(ds, df) {
 	axis(1, at=as.Date(first_mondays$date, '%Y-%m-%d'), labels=F)
         text(as.Date(first_mondays$date, '%Y-%m-%d'), par("usr")[3] - 500.0, labels=first_mondays$date, srt=45, adj=1, xpd=T, cex=0.6)
 	axis(2, at=ya_info, labels=ya_info, las=1)
+
+	# add a line that shows when vaccinations started
+	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta')
+
 	title(main=paste(ds, 'Weekly COVID-19 Deaths; Weeks start on Monday', sep=' '))
 	title(sub=paste('Source:', src_world, sep=' '))
 
 	abline(h=ya_info, lty=3, col='black')
 	abline(v=as.Date(first_mondays$date, '%Y-%m-%d'), lty=3, col='black')
+
+	# add the legend
+	legend('top', inset=c(0, 0.02), bg='white',
+		legend=c('weekly deaths', 'vac.starts'),
+		col=c('black', 'magenta'),
+		lwd=c(1, 1),
+		cex=0.7
+	)
 }
