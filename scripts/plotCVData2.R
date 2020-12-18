@@ -55,7 +55,13 @@ plotCVData2 <- function(ds, df) {
 
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
-		legend=c('deaths', 'daily deaths used in model', 'daily deaths not used in model', 'lm(dd ~ date, last 15 days)', 'deaths/confirmed', 'vac. started'),
+		legend=c('deaths',
+			 'daily deaths used in model',
+			 'daily deaths not used in model',
+			 'lm(dd ~ date, last 15 days)',
+			 'deaths/confirmed',
+			 paste('vaccination starts:', v_start, sep=' ')
+		),
 		col=c('red', 'orange', 'orange', 'black', 'blue', 'magenta'),
 		lwd=c(1,3,1,1,1, 1),
 		lty=c(1,1,1,2,1, 1),

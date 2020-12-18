@@ -76,7 +76,7 @@ plotCVDeaths_byWeek <- function(ds, df) {
 
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
-		legend=c('weekly deaths', 'vac.starts'),
+		legend=c('weekly deaths', paste('vaccination starts:', v_start, sep=' ')),
 		col=c('black', 'magenta'),
 		lwd=c(1, 1),
 		cex=0.7

@@ -48,7 +48,7 @@ plotCVData <- function(ds, df) {
 
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
-		legend=c('confirmed', 'deaths', 'recovered', 'deaths/confirmed', 'vac. starts'),
+		legend=c('confirmed', 'deaths', 'recovered', 'deaths/confirmed', paste('vaccination starts:', v_start, sep=' ')),
 		col=c('black', 'red', 'green', 'blue', 'magenta'),
 		lwd=c(1, 1, 1, 1, 1),
 		cex=0.7
