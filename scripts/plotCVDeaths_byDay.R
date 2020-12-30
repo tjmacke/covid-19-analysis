@@ -49,7 +49,7 @@ plotCVDeaths_byDay <- function(ds, df) {
 	x_lb <- c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
 	axis(1, at=x_tk, labels=x_lb)
 	axis(2, at=ya_info, labels=ya_info, las=1)
-	title(main='US Daily COVID-19 Deaths by Week')
+	title(main='US COVID-19 Daily Deaths by Week')
 	title(sub=paste('Source:', ifelse(df$source[1] == 'world', src_world, src_states), sep=''))
 
 	# add a nice grid
