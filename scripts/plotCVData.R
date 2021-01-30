@@ -6,6 +6,7 @@ plotCVData <- function(ds, df) {
 
         # vaccinations begin:
 	v_start <- '2020-12-14'
+	v_start_2d <- '2021-01-11'
 
 	dm_home <- Sys.getenv('DM_HOME')
 	if (dm_home == '') {

@@ -1,4 +1,4 @@
-plotCVDeaths_byDay <- function(ds, df) {
+plotCVDeaths_byDay <- function(ds, df, val='deaths') {
 
 	# sources:
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
@@ -18,6 +18,9 @@ plotCVDeaths_byDay <- function(ds, df) {
 		last_n <- 4
 	}
 
+	f_val <- paste('daily_', val, sep='')
+	t_val <- paste(toupper(substring(val, 1, 1)), substring(val, 2), sep='')
+
 	mon <- df[cv$weekday == 'Monday',]
 	if (ncol(mon) == 0) {
 		stop('no Mondays in dataset', call=.F)
@@ -30,7 +33,7 @@ plotCVDeaths_byDay <- function(ds, df) {
 
 	f_row = m2c_idx[f_mon]
 	l_row = nrow(df)
-	ya_info <- getYaxisInfo(max(df[f_row:l_row, 'daily_deaths']))
+	ya_info <- getYaxisInfo(max(df[f_row:l_row, f_val]))
 	y_max <- max(ya_info)
 
 	# Start the plot
@@ -40,7 +43,7 @@ plotCVDeaths_byDay <- function(ds, df) {
 		type='n',
 		xlab='Day of the Week',
 		xaxt='n',
-		ylab='Daily Deaths',
+		ylab=paste('Daily', t_val, sep=' '),
 		yaxt='n'
 	)
 
@@ -49,7 +52,7 @@ plotCVDeaths_byDay <- function(ds, df) {
 	x_lb <- c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
 	axis(1, at=x_tk, labels=x_lb)
 	axis(2, at=ya_info, labels=ya_info, las=1)
-	title(main='US COVID-19 Daily Deaths by Week')
+	title(main=paste('US COVID-19 Daily', t_val, 'by Week', sep=' '))
 	title(sub=paste('Source:', ifelse(df$source[1] == 'world', src_world, src_states), sep=''))
 
 	# add a nice grid
@@ -69,14 +72,13 @@ plotCVDeaths_byDay <- function(ds, df) {
 		f_row <- m2c_idx[m]
 		l_row <- ifelse(f_row+6 <= nrow(df), f_row+6, nrow(df))
 		if (l_row > f_row) {
-			lines(seq(1, l_row-f_row+1), df[f_row:l_row, 'daily_deaths'], lwd=3, col=colors[c_idx])
+			lines(seq(1, l_row-f_row+1), df[f_row:l_row, f_val], lwd=3, col=colors[c_idx])
 		} else {
-			points(c(1), df[f_row, 'daily_deaths'], pch=21, bg = colors[c_idx], col=colors[c_idx])
+			points(c(1), df[f_row, f_val], pch=21, bg = colors[c_idx], col=colors[c_idx])
 		}
 		l_col <- c(colors[c_idx], l_col) 
 		is_short <- ifelse(l_row-f_row+1 < 7, paste(', ', l_row-f_row+1, ' days', sep=''), '')
-		# l_text <- c(l_text, paste(df[f_row, 'date'], ', total = ', sum(df[f_row:l_row, 'daily_deaths']), is_short, sep=''))
-		l_text <- c(paste(df[f_row, 'date'], ', total = ', sum(df[f_row:l_row, 'daily_deaths']), is_short, sep=''), l_text)
+		l_text <- c(paste(df[f_row, 'date'], ', total = ', sum(df[f_row:l_row, f_val]), is_short, sep=''), l_text)
 		c_idx <- c_idx + 1
 	}
 
