@@ -56,24 +56,28 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 
 	first_mondays <- mondays[mondays$mday <= 7,]
 
+	sundays <- df[cv$weekday == 'Sunday',]
+	first_sundays <- sundays[sundays$mday <= 7,]
+
 	plot(
-		c(as.Date(mondays[1, 'date'], '%Y-%m-%d'), as.Date(mondays[l_monday_row, 'date'], '%Y-%m-%d')),
+		c(as.Date(cv$date[1], '%Y-%m-%d'), as.Date(cv$date[nrow(cv)], '%Y-%m-%d')),
 		c(0, y_max),
 		type='n',
-		xlab='First Monday of Month',
+		xlab='First Sunday of Month',
 		xaxt='n',
 		ylab=paste('Weekly', t_val, sep=' ') ,
 		yaxt='n'
 	)
 	lines(as.Date(mondays$date, '%Y-%m-%d'), mondays$vpw)
-	axis(1, at=as.Date(first_mondays$date, '%Y-%m-%d'), labels=F)
-        text(as.Date(first_mondays$date, '%Y-%m-%d'), par("usr")[3] - 500.0, labels=first_mondays$date, srt=45, adj=1, xpd=T, cex=0.6)
+	axis(1, at=as.Date(first_sundays$date, '%Y-%m-%d'), labels=F)
+        text(as.Date(first_sundays$date, '%Y-%m-%d'), par("usr")[3] - 500.0, labels=first_sundays$date, srt=45, adj=1, xpd=T, cex=0.6)
 	axis(2, at=ya_info, labels=ya_info, las=1, cex.axis=y_axis_cex)
 
 	# add a line that shows when vaccinations started
-	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta')
+	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta', lty=2)
+	abline(v=as.Date(v_start_2d, '%Y-%m-%d'), col='magenta')
 
-	title(main=paste(ds, 'Weekly COVID-19',  paste(t_val, ';', sep=''),  'Weeks start on Monday', sep=' '))
+	title(main=paste(ds, 'Weekly COVID-19',  paste(t_val, ';', sep=''),  'Weeks end on Sunday', sep=' '))
 	title(sub=paste('Source:', src_world, sep=' '))
 
 	abline(h=ya_info, lty=3, col='black')
@@ -81,9 +85,14 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
-		legend=c('weekly deaths', paste('vaccination starts:', v_start, sep=' ')),
-		col=c('black', 'magenta'),
-		lwd=c(1, 1),
+		legend=c(
+			'weekly deaths',
+			paste('vaccination starts:', v_start, sep=' '),
+			paste('2d dose starts:', v_start_2d, sep=' ')
+		),
+		col=c('black', 'magenta', 'magenta'),
+		lty=c(1, 2, 1),
+		lwd=c(1, 1, 1),
 		cex=0.7
 	)
 }
