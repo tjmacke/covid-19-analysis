@@ -1,4 +1,4 @@
-plotCVDeaths_byWeek <- function(ds, df) {
+plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 
 	# sources:
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
@@ -15,61 +15,65 @@ plotCVDeaths_byWeek <- function(ds, df) {
 	sfn <- paste(dm_home, 'lib', 'getYaxisInfo.R', sep='/')
 	source(sfn, chdir=T)
 
-	mon <- df[cv$weekday == 'Monday',]
-	if (ncol(mon) == 0) {
+	f_val = paste('daily_', val, sep='')
+	t_val = paste(toupper(substring(val, 1, 1)), substring(val, 2), sep='')
+	y_axis_cex = ifelse(val == 'confirmed', 0.5, 0.6)
+
+	mondays <- df[cv$weekday == 'Monday',]
+	if (ncol(mondays) == 0) {
 		stop('no Mondays in dataset', call=.F)
 	}
 
-	m2c_idx <- as.integer(rownames(mon))
+	m2c_idx <- as.integer(rownames(mondays))
 	m2c_len <- c(diff(m2c_idx), nrow(df) - m2c_idx[length(m2c_idx)] + 1)
 
-	f_mon <- m2c_idx[1]
-	l_mon <- m2c_idx[length(m2c_idx)]
-	f_row <- f_mon
+	f_monday <- m2c_idx[1]
+	l_monday <- m2c_idx[length(m2c_idx)]
+	f_row <- f_monday
 	l_row <- nrow(df)
 
-	if (l_row - l_mon < 6) { # short week, skip
-		l_mon = l_mon - 7
-		if (l_mon < f_mon) {
+	if (l_row - l_monday < 6) { # short week, skip
+		l_monday = l_monday- 7
+		if (l_monday < f_monday) {
 			stop('data has only 1 short week.', call=.F)
 		}
-		l_row = l_mon + 6
+		l_row = l_monday + 6
 	}
 
-	dpw <- c()
+	vpw <- c()
 	for (i in seq(f_row, l_row, 7)) {
-		dpw <- c(dpw, sum(cv[i:(i+6), 'daily_deaths']))
+		vpw <- c(vpw, sum(cv[i:(i+6), f_val]))
 	}
-	l_mon_row <- nrow(mon)
-	if (length(dpw) < nrow(mon)) {
-		dpw <- c(dpw, NA)
-		l_mon_row = l_mon_row - 1
+	l_monday_row <- nrow(mondays)
+	if (length(vpw) < nrow(mondays)) {
+		vpw <- c(vpw, NA)
+		l_monday_row = l_monday_row - 1
 	}
-	mon$dpw <- dpw
+	mondays$vpw <- vpw
 
-	ya_info <- getYaxisInfo(max(mon$dpw, na.rm=T))
+	ya_info <- getYaxisInfo(max(mondays$vpw, na.rm=T))
 	y_max <- max(ya_info)
 
-	first_mondays <- mon[mon$mday <= 7,]
+	first_mondays <- mondays[mondays$mday <= 7,]
 
 	plot(
-		c(as.Date(mon[1, 'date'], '%Y-%m-%d'), as.Date(mon[l_mon_row, 'date'], '%Y-%m-%d')),
+		c(as.Date(mondays[1, 'date'], '%Y-%m-%d'), as.Date(mondays[l_monday_row, 'date'], '%Y-%m-%d')),
 		c(0, y_max),
 		type='n',
 		xlab='First Monday of Month',
 		xaxt='n',
-		ylab='Weekly Deaths',
+		ylab=paste('Weekly', t_val, sep=' ') ,
 		yaxt='n'
 	)
-	lines(as.Date(mon$date, '%Y-%m-%d'), mon$dpw)
+	lines(as.Date(mondays$date, '%Y-%m-%d'), mondays$vpw)
 	axis(1, at=as.Date(first_mondays$date, '%Y-%m-%d'), labels=F)
         text(as.Date(first_mondays$date, '%Y-%m-%d'), par("usr")[3] - 500.0, labels=first_mondays$date, srt=45, adj=1, xpd=T, cex=0.6)
-	axis(2, at=ya_info, labels=ya_info, las=1)
+	axis(2, at=ya_info, labels=ya_info, las=1, cex.axis=y_axis_cex)
 
 	# add a line that shows when vaccinations started
 	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta')
 
-	title(main=paste(ds, 'Weekly COVID-19 Deaths; Weeks start on Monday', sep=' '))
+	title(main=paste(ds, 'Weekly COVID-19',  paste(t_val, ';', sep=''),  'Weeks start on Monday', sep=' '))
 	title(sub=paste('Source:', src_world, sep=' '))
 
 	abline(h=ya_info, lty=3, col='black')

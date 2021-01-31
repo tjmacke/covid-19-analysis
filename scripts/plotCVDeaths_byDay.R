@@ -20,6 +20,7 @@ plotCVDeaths_byDay <- function(ds, df, val='deaths') {
 
 	f_val <- paste('daily_', val, sep='')
 	t_val <- paste(toupper(substring(val, 1, 1)), substring(val, 2), sep='')
+	y_axis_cex <- ifelse(val == 'confirmed', 0.75, 1.0)
 
 	mon <- df[cv$weekday == 'Monday',]
 	if (ncol(mon) == 0) {
@@ -51,7 +52,7 @@ plotCVDeaths_byDay <- function(ds, df, val='deaths') {
 	x_tk <- seq(1, 7)
 	x_lb <- c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun')
 	axis(1, at=x_tk, labels=x_lb)
-	axis(2, at=ya_info, labels=ya_info, las=1)
+	axis(2, at=ya_info, labels=ya_info, las=1, cex.axis=y_axis_cex)
 	title(main=paste('US COVID-19 Daily', t_val, 'by Week', sep=' '))
 	title(sub=paste('Source:', ifelse(df$source[1] == 'world', src_world, src_states), sep=''))
 
@@ -87,5 +88,5 @@ plotCVDeaths_byDay <- function(ds, df, val='deaths') {
 		legend=l_text,
 		col=l_col,
 		lwd=3,
-		lty=1)
+		lty=1, cex=0.5)
 }
