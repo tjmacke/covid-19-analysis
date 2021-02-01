@@ -20,44 +20,37 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 	y_axis_cex = ifelse(val == 'confirmed', 0.5, 0.6)
 
 	mondays <- df[df$weekday == 'Monday',]
-	if (ncol(mondays) == 0) {
+	if (nrow(mondays) == 0) {
 		stop('no Mondays in dataset', call=.F)
 	}
 
 	m2c_idx <- as.integer(rownames(mondays))
-	m2c_len <- c(diff(m2c_idx), nrow(df) - m2c_idx[length(m2c_idx)] + 1)
 
 	f_monday <- m2c_idx[1]
 	l_monday <- m2c_idx[length(m2c_idx)]
 	f_row <- f_monday
 	l_row <- nrow(df)
-
-	if (l_row - l_monday < 6) { # short week, skip
-		l_monday = l_monday- 7
-		if (l_monday < f_monday) {
+	if (l_row - l_monday < 6) { # last week is short
+		if(l_monday == f_monday){
 			stop('data has only 1 short week.', call=.F)
 		}
+		l_monday = l_monday- 7
 		l_row = l_monday + 6
 	}
-
 	vpw <- c()
 	for (i in seq(f_row, l_row, 7)) {
 		vpw <- c(vpw, sum(df[i:(i+6), f_val]))
 	}
-	l_monday_row <- nrow(mondays)
-	if (length(vpw) < nrow(mondays)) {
+	# deal with possible short final week
+	if(length(vpw) < nrow(mondays)){
 		vpw <- c(vpw, NA)
-		l_monday_row = l_monday_row - 1
 	}
 	mondays$vpw <- vpw
 
 	ya_info <- getYaxisInfo(max(mondays$vpw, na.rm=T))
 	y_max <- max(ya_info)
 
-	first_mondays <- mondays[mondays$mday <= 7,]
-
-	sundays <- df[df$weekday == 'Sunday',]
-	first_sundays <- sundays[sundays$mday <= 7,]
+	first_sundays <- df[df$weekday == 'Sunday' & df$mday <= 7,]
 
 	plot(
 		c(as.Date(df$date[1], '%Y-%m-%d'), as.Date(df$date[nrow(df)], '%Y-%m-%d')),
@@ -77,18 +70,18 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta', lty=2)
 	abline(v=as.Date(v_start_2d, '%Y-%m-%d'), col='magenta')
 
-	title(main=paste(ds, 'Weekly COVID-19',  paste(t_val, ';', sep=''),  'Weeks end on Sunday', sep=' '))
+	title(main=paste(ds, 'Weekly COVID-19',  paste(t_val, ';', sep=''),  'Weeks start on Monday', sep=' '))
 	title(sub=paste('Source:', src_world, sep=' '))
 
 	abline(h=ya_info, lty=3, col='black')
-	abline(v=as.Date(first_mondays$date, '%Y-%m-%d'), lty=3, col='black')
+	abline(v=as.Date(first_sundays$date, '%Y-%m-%d'), lty=3, col='black')
 
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
 		legend=c(
 			'weekly deaths',
-			paste('vaccination starts:', v_start, sep=' '),
-			paste('2d dose starts:', v_start_2d, sep=' ')
+			paste('vaccination dose 1 starts:', v_start, sep=' '),
+			paste('vaccination dose 2 starts:', v_start_2d, sep=' ')
 		),
 		col=c('black', 'magenta', 'magenta'),
 		lty=c(1, 2, 1),
