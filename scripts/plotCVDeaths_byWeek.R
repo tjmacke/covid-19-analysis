@@ -37,17 +37,15 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 		l_monday = l_monday- 7
 		l_row = l_monday + 6
 	}
+	sundays <- df[f_row:l_row,]
+	sundays <- sundays[sundays$weekday == 'Sunday',]
 	vpw <- c()
 	for (i in seq(f_row, l_row, 7)) {
 		vpw <- c(vpw, sum(df[i:(i+6), f_val]))
 	}
-	# deal with possible short final week
-	if(length(vpw) < nrow(mondays)){
-		vpw <- c(vpw, NA)
-	}
-	mondays$vpw <- vpw
+	sundays$vpw <- vpw
 
-	ya_info <- getYaxisInfo(max(mondays$vpw, na.rm=T))
+	ya_info <- getYaxisInfo(max(sundays$vpw, na.rm=T))
 	y_max <- max(ya_info)
 
 	first_sundays <- df[df$weekday == 'Sunday' & df$mday <= 7,]
@@ -61,7 +59,7 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 		ylab=paste('Weekly', t_val, sep=' ') ,
 		yaxt='n'
 	)
-	lines(as.Date(mondays$date, '%Y-%m-%d'), mondays$vpw)
+	lines(as.Date(sundays$date, '%Y-%m-%d'), sundays$vpw)
 	axis(1, at=as.Date(first_sundays$date, '%Y-%m-%d'), labels=F)
         text(as.Date(first_sundays$date, '%Y-%m-%d'), par("usr")[3] - 500.0, labels=first_sundays$date, srt=45, adj=1, xpd=T, cex=0.6)
 	axis(2, at=ya_info, labels=ya_info, las=1, cex.axis=y_axis_cex)
@@ -70,7 +68,16 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta', lty=2)
 	abline(v=as.Date(v_start_2d, '%Y-%m-%d'), col='magenta')
 
-	title(main=paste(ds, 'COVID-19 Weekly',  paste(t_val, ';', sep=''),  'Weeks start on Monday', sep=' '))
+	title(
+		main=paste(
+			ds,
+			'COVID-19 Weekly',
+			paste(t_val, ';', sep=''), 
+			'Weeks end on Sunday;',
+			paste('Last=', sundays$date[nrow(sundays)], sep=''),
+			sep=' '),
+		cex.main=1.0
+	)
 	title(sub=paste('Source:', src_world, sep=' '))
 
 	abline(h=ya_info, lty=3, col='black')
