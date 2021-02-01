@@ -70,7 +70,7 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta', lty=2)
 	abline(v=as.Date(v_start_2d, '%Y-%m-%d'), col='magenta')
 
-	title(main=paste(ds, 'Weekly COVID-19',  paste(t_val, ';', sep=''),  'Weeks start on Monday', sep=' '))
+	title(main=paste(ds, 'COVID-19 Weekly',  paste(t_val, ';', sep=''),  'Weeks start on Monday', sep=' '))
 	title(sub=paste('Source:', src_world, sep=' '))
 
 	abline(h=ya_info, lty=3, col='black')
