@@ -19,7 +19,7 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 	t_val = paste(toupper(substring(val, 1, 1)), substring(val, 2), sep='')
 	y_axis_cex = ifelse(val == 'confirmed', 0.5, 0.6)
 
-	mondays <- df[cv$weekday == 'Monday',]
+	mondays <- df[df$weekday == 'Monday',]
 	if (ncol(mondays) == 0) {
 		stop('no Mondays in dataset', call=.F)
 	}
@@ -42,7 +42,7 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 
 	vpw <- c()
 	for (i in seq(f_row, l_row, 7)) {
-		vpw <- c(vpw, sum(cv[i:(i+6), f_val]))
+		vpw <- c(vpw, sum(df[i:(i+6), f_val]))
 	}
 	l_monday_row <- nrow(mondays)
 	if (length(vpw) < nrow(mondays)) {
@@ -56,11 +56,11 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 
 	first_mondays <- mondays[mondays$mday <= 7,]
 
-	sundays <- df[cv$weekday == 'Sunday',]
+	sundays <- df[df$weekday == 'Sunday',]
 	first_sundays <- sundays[sundays$mday <= 7,]
 
 	plot(
-		c(as.Date(cv$date[1], '%Y-%m-%d'), as.Date(cv$date[nrow(cv)], '%Y-%m-%d')),
+		c(as.Date(df$date[1], '%Y-%m-%d'), as.Date(df$date[nrow(df)], '%Y-%m-%d')),
 		c(0, y_max),
 		type='n',
 		xlab='First Sunday of Month',

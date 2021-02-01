@@ -22,7 +22,7 @@ plotCVDeaths_byDay <- function(ds, df, val='deaths') {
 	t_val <- paste(toupper(substring(val, 1, 1)), substring(val, 2), sep='')
 	y_axis_cex <- ifelse(val == 'confirmed', 0.75, 1.0)
 
-	mon <- df[cv$weekday == 'Monday',]
+	mon <- df[df$weekday == 'Monday',]
 	if (ncol(mon) == 0) {
 		stop('no Mondays in dataset', call=.F)
 	}
