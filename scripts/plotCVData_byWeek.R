@@ -1,4 +1,4 @@
-plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
+plotCVData_byWeek <- function(ds, df, val='deaths') {
 
 	# sources:
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
@@ -86,7 +86,7 @@ plotCVDeaths_byWeek <- function(ds, df, val='deaths') {
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
 		legend=c(
-			'weekly deaths',
+			paste('weekly',  val, sep=' '),
 			paste('vaccination dose 1 starts:', v_start, sep=' '),
 			paste('vaccination dose 2 starts:', v_start_2d, sep=' ')
 		),

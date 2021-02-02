@@ -1,4 +1,4 @@
-plotCVDeaths_byDay <- function(ds, df, val='deaths') {
+plotCVData_byDay <- function(ds, df, val='deaths') {
 
 	# sources:
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
