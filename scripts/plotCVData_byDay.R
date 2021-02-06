@@ -88,5 +88,7 @@ plotCVData_byDay <- function(ds, df, val='deaths') {
 		legend=l_text,
 		col=l_col,
 		lwd=3,
-		lty=1, cex=0.5)
+		lty=1,
+		cex=ifelse(par('mfrow')[1] == 1, 0.7, 0.5)
+	)
 }

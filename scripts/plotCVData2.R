@@ -48,7 +48,8 @@ plotCVData2 <- function(ds, df) {
 	abline(dd_lm, lty=2)
 
 	# add a line that shows when vaccinations started
-	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta')
+	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta', lty=2)
+	abline(v=as.Date(v_start_2d, '%Y-%m-%d'), col='magenta')
 
 	# add titles
 	title(main=paste(ds, ' Covid-19 Deaths Through ', df$date[nrow(df)], 'T23:59:59Z', sep=''))
@@ -61,12 +62,13 @@ plotCVData2 <- function(ds, df) {
 			 'daily deaths not used in model',
 			 'lm(dd ~ date, last 15 days)',
 			 'deaths/confirmed',
-			 paste('vaccination starts:', v_start, sep=' ')
+			 paste('vaccination dose 1 starts:', v_start, sep=' '),
+			 paste('vaccination dose 2 starts:', v_start_2d, sep=' ')
 		),
-		col=c('red', 'orange', 'orange', 'black', 'blue', 'magenta'),
-		lwd=c(1,3,1,1,1, 1),
-		lty=c(1,1,1,2,1, 1),
-		cex=0.7
+		col=c('red', 'orange', 'orange', 'black', 'blue', 'magenta', 'magenta'),
+		lwd=c(1, 3, 1, 1, 1, 1, 1),
+		lty=c(1, 1, 1, 2, 1, 2, 1),
+		cex=ifelse(par('mfrow')[1] == 1, 0.7, 0.5)
 	)
 
 	# plot the deaths/confirmed using scale on right side

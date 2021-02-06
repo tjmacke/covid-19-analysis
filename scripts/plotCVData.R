@@ -37,7 +37,8 @@ plotCVData <- function(ds, df) {
 	lines(as.Date(df$date, '%Y-%m-%d'), df$recovered, col='green')
 
 	# add a line that shows when vaccinations started
-	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta')
+	abline(v=as.Date(v_start, '%Y-%m-%d'), col='magenta', lty=2)
+	abline(v=as.Date(v_start_2d, '%Y-%m-%d'), col='magenta')
 
 	# add the axes
 	axis(2, at=ya_info, labels=ya_info) #, las=1)
@@ -49,10 +50,18 @@ plotCVData <- function(ds, df) {
 
 	# add the legend
 	legend('top', inset=c(0, 0.02), bg='white',
-		legend=c('confirmed', 'deaths', 'recovered', 'deaths/confirmed', paste('vaccination starts:', v_start, sep=' ')),
-		col=c('black', 'red', 'green', 'blue', 'magenta'),
-		lwd=c(1, 1, 1, 1, 1),
-		cex=0.7
+		legend=c(
+			'confirmed',
+			'deaths',
+			'recovered',
+			'deaths/confirmed',
+			paste('vaccination dose 1 starts:', v_start, sep=' '),
+			paste('vaccination dose 2 starts:', v_start_2d, sep=' ')
+		),
+		col=c('black', 'red', 'green', 'blue', 'magenta', 'magenta'),
+		lty=c(1, 1, 1, 1, 2, 1),
+		lwd=c(1, 1, 1, 1, 1, 1),
+		cex=ifelse(par('mfrow')[1] == 1, 0.7, 0.5)
 	)
 
 	# plot the deaths/confirmed using scale on right side

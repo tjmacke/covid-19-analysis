@@ -93,6 +93,6 @@ plotCVData_byWeek <- function(ds, df, val='deaths') {
 		col=c('black', 'magenta', 'magenta'),
 		lty=c(1, 2, 1),
 		lwd=c(1, 1, 1),
-		cex=0.7
+		cex=ifelse(par('mfrow')[1] == 1, 0.7, 0.5)
 	)
 }
