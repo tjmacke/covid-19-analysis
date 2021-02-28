@@ -76,7 +76,7 @@ awk -F'\t' 'NR > 1 {
 }' $FILE > $TMP_DFILE
 
 for d in $(tail -n +10 $TMP_DFILE) ; do
-	$CVA_SCRIPTS/get_dd_states.sh -d $d $FILE |
+	$CVA_SCRIPTS/get_dv_states.sh -d $d $FILE |
 	awk -F'\t' 'BEGIN {
 		pct = "'"$PCT"'" + 0
 		map = "'"$MAP"'" == "yes"

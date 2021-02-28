@@ -1,4 +1,4 @@
-plotCVData_byDay <- function(ds, df, val='deaths') {
+plotCVData_byDay <- function(ds, df, val='deaths', lg_pos='bottom', lg_inset=c(0, 0.02)) {
 
 	# sources:
 	src_world <- 'https://github.com/CSSEGISandData/COVID-19'
@@ -84,7 +84,7 @@ plotCVData_byDay <- function(ds, df, val='deaths') {
 	}
 
 	# add the legend
-	legend('bottom', inset=c(0, 0.02), bg='white',
+	legend(lg_pos, inset=lg_inset, bg='white',
 		legend=l_text,
 		col=l_col,
 		lwd=3,
